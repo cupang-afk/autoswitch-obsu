@@ -1,14 +1,11 @@
 """
 NOTE
-- You must add your OBS Scene manualy at translateScene class (yours probably not same as mine)
-
-NOTE 2
 - The purpose of making this script is to AutoSwitch OBS Scene via Websocket for osu! game
 - The Data collected is from Gosumemory (https://github.com/l3lackShark/gosumemory)
 - The script first will collect your current state in osu! (Song Select, Menu Screen, Playing etc)
     and then change the Scene on your OBS Stucdio via Websocket
-- The scene name must be configured to match your OBS Profile
-    Do that manualy
+- Scenes will be collected automatically from OBS Studio via Websocket
+- The script will then generate a config.yaml which will be used to save the configuration
 """
 #---------------------------------------
 # Import Function (if not installed, install it)
