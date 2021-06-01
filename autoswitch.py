@@ -135,7 +135,7 @@ def CaseSensitivePath(name):
 
 printHeader('import config.json')
 # Check if config.yaml is exist, otherwise create config.yaml
-CONFIG_FILE = os.path.join(sys.path[0], "config.yaml")
+CONFIG_FILE = ".\\config.yaml"
 
 # Read config.yaml
 try:
@@ -163,7 +163,7 @@ except IOError:
     
     writeYAML(data, CONFIG_FILE)
 finally:
-    CONFIG_FILE = CaseSensitivePath(CONFIG_FILE)
+    CONFIG_FILE = CaseSensitivePath(str(os.path.abspath(".\\config.yaml")))
     config_file = open(CONFIG_FILE, "r")
     config_yaml = readYAML(config_file.read())
     
@@ -252,15 +252,17 @@ else:
     # print scene_list
     for key, value in scene_list.items():
         print(key,':', value)
-    
+        
     # ask user input
-    print('\n',
-          Fore.WHITE +'If it is empty then you have to rename your obs scene with', 
-          Fore.YELLOW + '[osu]', 
-          Fore.WHITE + 'included')
-    scene_mode_default = input(Fore.WHITE + 'Enter number for your default scene : ')
-    scene_mode_song_select = input(Fore.WHITE + 'Enter number for your song select scene : ')
-    
+    try:
+        print()
+        print(Fore.WHITE +'If it is empty then you have to rename your obs scene with', 
+            Fore.YELLOW + '[osu]', 
+            Fore.WHITE + 'included\nand run this script again (CTRL-C to terminate)\n')
+        scene_mode_default = input(Fore.WHITE + 'Enter number for your default scene : ')
+        scene_mode_song_select = input(Fore.WHITE + 'Enter number for your song select scene : ')
+    except KeyboardInterrupt:
+        exit()
     # write to config.yaml
     config_yaml['general']['state']['default'] = scene_mode_default
     config_yaml['general']['state']['song select'] = scene_mode_song_select
@@ -268,8 +270,8 @@ else:
     
     # note
     time.sleep(1)
-    print('\n',
-          Fore.WHITE + 'I cant ask you to input every scene, but instead')
+    print()
+    print(Fore.WHITE + 'I cant ask you to input every scene, but instead')
     time.sleep(1)
     print(Fore.WHITE + 'input them yourself in your', 
           Fore.GREEN + 'config.yaml')
@@ -282,17 +284,17 @@ else:
           Fore.BLUE + '     # add osu! state here')
     time.sleep(1)
     print(Fore.YELLOW + '      2 :', 
-          Fore.GREEN + '3')
+          Fore.GREEN + '3',
+          '\n')
     time.sleep(1)
-    print('\n',
-          Fore.WHITE + 'with', 
+    print(Fore.WHITE + 'with', 
           Fore.YELLOW + '2', 
           Fore.WHITE + 'is osu state(from link above) and', 
           Fore.GREEN + '3',
-          Fore.WHITE + 'is your scene number')
+          Fore.WHITE + 'is your scene number',
+          '\n')
     time.sleep(10)
-    print('\n',
-          Fore.GREEN + 'Using default value')
+    print(Fore.GREEN + 'Using default value')
     time.sleep(3)
     
 # Get state_list from config.yaml, otherwise create
