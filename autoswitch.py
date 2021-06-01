@@ -80,7 +80,7 @@ time.sleep(3)
 #---------------------------------------
 def printHeader(header):
     header_template = {
-        "import config.json": "----------------------------\n-----IMPORT CONFIG.JSON-----\n----------------------------\n",
+        "import config.yaml": "----------------------------\n-----IMPORT CONFIG.YAML-----\n----------------------------\n",
         "error": "----------------------------\n-----------ERROR------------\n----------------------------\n",
         "scene selector": "----------------------------\n-------Scene Selector-------\n----------------------------\n",
         "initial process": "----------------------------\n-----Initial Process--------\n--------only once-----------\n----------------------------\n",
@@ -133,16 +133,19 @@ def CaseSensitivePath(name):
 # Global Vars
 #---------------------------------------
 
-printHeader('import config.json')
+printHeader('import config.yaml')
 
 # Check if config.yaml is exist, otherwise create config.yaml
 CONFIG_FILE = ".\\config.yaml"
 
 # Read config.yaml
 try:
+    
     print(Fore.WHITE + 'Import config.yaml')
     config_file = open(CONFIG_FILE, "r")
+    
 except IOError:
+    
     data = """\
     general:
         song select mode:
@@ -154,20 +157,18 @@ except IOError:
         port: 4444
     """
     
-    # convert to yaml format
     data = readYAML(data)
     print(Fore.RED + 'config.yaml not found')
-    
     time.sleep(1)
-    
     print(Fore.WHITE +'Creating config.yaml')
-    
     writeYAML(data, CONFIG_FILE)
+    
 finally:
+    
     CONFIG_FILE = CaseSensitivePath(str(os.path.abspath(".\\config.yaml")))
     config_file = open(CONFIG_FILE, "r")
     config_yaml = readYAML(config_file.read())
-    
+
     print(Fore.YELLOW + '"{}"'.format(CONFIG_FILE))
     time.sleep(3)
     
@@ -221,13 +222,11 @@ else:
               Fore.WHITE + 'And make sure the password is match\n')
         exit()
         
-    # creating scene section in config.yaml
     config_yaml['obs-websocket']['scene'] = {}
     writeYAML(config_yaml, CONFIG_FILE)
     
     get_scene_list = ws.call(requests.GetSceneList())
     list = config_yaml['obs-websocket']['scene']
-    # get scene
     for scene in get_scene_list.getScenes():
         get_name = '{}'.format(scene.get('name'))
         if get_name.__contains__('[osu]'):
@@ -235,7 +234,6 @@ else:
             writeYAML(config_yaml, CONFIG_FILE)
             increment += 1
             
-    # link config.yaml scene list to scene_list
     for key,value in list.items():
         scene_list['{}'.format(key)] = value
     
@@ -254,12 +252,11 @@ else:
     
     config_yaml['general']['state'] = {}
     
-    # print scene_list
     printHeader('scene selector')
     for key, value in scene_list.items():
         print(key,':', value)
         
-    # ask user input
+    # user input
     try:
         print()
         print(Fore.WHITE +'If it is empty then you have to rename your obs scene with', 
@@ -270,12 +267,10 @@ else:
     except KeyboardInterrupt:
         exit()
 
-    # write to config.yaml
     config_yaml['general']['state']['default'] = scene_mode_default
     config_yaml['general']['state']['song select'] = scene_mode_song_select
     writeYAML(config_yaml, CONFIG_FILE)
     
-    # print note
     time.sleep(1)
     print()
     print(Fore.WHITE + 'I cant ask you to input every scene, but instead')
@@ -314,7 +309,6 @@ if ('list' in config_yaml['general']['state']):
         
 else: 
     
-    # write to config.yaml
     value = """\
     # add osu!state or change obs scene number here
     5:  0      # Song Select
@@ -329,10 +323,10 @@ else:
     # reference for osu!state (https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/OsuMemoryDataProvider/OsuMemoryStatus.cs)
     """
     value = readYAML(value)
+    
     config_yaml['general']['state']['list'] = value
     writeYAML(config_yaml, CONFIG_FILE)
     
-    # load from config.yaml
     list = config_yaml['general']['state']['list']
     for key,value in list.items():
         state_list['{}'.format(key)] = value
@@ -380,13 +374,8 @@ class Websocket:
                 self.ws.connect()
             except exceptions.ConnectionFailure as e:
                 printHeader('error')
-                print(Fore.RED + 'Error :',e,Fore.WHITE + '\nPlease Open OBS and enable Websocket server')
-                exit()
-            # Probably password thing
-            except NameError:
-                printHeader('error')
-                print(Fore.RED + 'Please check config.json\n', Fore.WHITE + 'Make sure your OBS Websocket password is match') 
-                time.sleep(3)
+                print(Fore.RED + 'Error :',e,Fore.WHITE + '\nPlease Enable OBS Websocket\n',
+                      Fore.WHITE + 'And make sure the password is match\n')
                 exit()
                 
         def disconnect(self):
@@ -406,9 +395,9 @@ class translateScene:
         pass
     
     def ToText(self, scene_number):
-        # Get scene_list from config.json
+        # Get scene_list from config.yaml
         # return scene name from scene_list based on scene number
-        # you can add/change in your config.json
+        # you can add/change in your config.yaml
         global scene_list
         return scene_list.get('{0}'.format(scene_number))
     
@@ -416,7 +405,7 @@ class translateScene:
         # All osu! state can be read here:
         # https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/OsuMemoryDataProvider/OsuMemoryStatus.cs
         # return scene_number from state_list based on memory_state
-        # you can add/change in your config.json
+        # you can add/change in your config.yaml
         global scene_mode_default
         global state_list
         return state_list.get('{0}'.format(memory_state), scene_mode_default)
@@ -527,7 +516,7 @@ class OsuStatus:
     
     def doCheck(self):
         if (otv.old_memory_state != otv.new_memory_state):
-            ws_obs.setScene(ts.ToText(ts.FromMemoryState(omv.getMemoryState())))      # I'm gonna keeping note to change this. but it still readable just read back to front
+            ws_obs.setScene(ts.ToText(ts.FromMemoryState(omv.getMemoryState())))      # I'm gonna write TODO to change this. but it still readable just read back to front
             self.printMiniLog()
             otv.old_memory_state = otv.new_memory_state
         self.doCheckSongSelectStatus()
