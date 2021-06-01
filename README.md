@@ -12,4 +12,8 @@ autoswitch scene obs based from osu!state (Main Menu, Editor, Playing, Lobby etc
 
 ### NOTE
 only windows is supported since Gosumemory only support windows  
-and only on osu! stable
+
+### TODO
+- [ ] Improving  
+- [ ] Probably convert this to C# or Javascript  
+- [ ] Trying to create obs-python version  
