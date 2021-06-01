@@ -134,6 +134,7 @@ def CaseSensitivePath(name):
 #---------------------------------------
 
 printHeader('import config.json')
+
 # Check if config.yaml is exist, otherwise create config.yaml
 CONFIG_FILE = ".\\config.yaml"
 
@@ -178,8 +179,11 @@ port = config_yaml['obs-websocket']['port']
 
 # Check if the password is in config.yaml, otherwise enter the password
 if ('password' in config_yaml['obs-websocket']):
+    
     password = config_yaml['obs-websocket']['password']
+    
 else:
+    
     printHeader('password')
     password = input(Fore.WHITE + 'Enter OBS Websocket password : ')
     
@@ -207,8 +211,8 @@ else:
     increment = 0
     
     # initial obs-websocket connection (not using Websocket Class and variable will be deleted)
+    printHeader('initial process')
     try:
-        printHeader('initial process')
         ws.connect()
     except exceptions.ConnectionFailure:
         
@@ -237,19 +241,21 @@ else:
     
     config_file.close()
     ws.disconnect()
-    del increment, ws, get_scene_list, get_name, 
+    del increment, ws, get_scene_list, get_name
     print('Done')
 
 # Get default scene mode from config.yaml, otherwise ask user
 if ('state' in config_yaml['general']):
+    
     scene_mode_default = int(config_yaml['general']['state']['default'])
     scene_mode_song_select = int(config_yaml['general']['state']['song select'])
+    
 else:
+    
     config_yaml['general']['state'] = {}
     
-    printHeader('scene selector')
-    
     # print scene_list
+    printHeader('scene selector')
     for key, value in scene_list.items():
         print(key,':', value)
         
@@ -263,12 +269,13 @@ else:
         scene_mode_song_select = input(Fore.WHITE + 'Enter number for your song select scene : ')
     except KeyboardInterrupt:
         exit()
+
     # write to config.yaml
     config_yaml['general']['state']['default'] = scene_mode_default
     config_yaml['general']['state']['song select'] = scene_mode_song_select
     writeYAML(config_yaml, CONFIG_FILE)
     
-    # note
+    # print note
     time.sleep(1)
     print()
     print(Fore.WHITE + 'I cant ask you to input every scene, but instead')
@@ -300,10 +307,13 @@ else:
 # Get state_list from config.yaml, otherwise create
 state_list = {} 
 if ('list' in config_yaml['general']['state']):
+    
     list = config_yaml['general']['state']['list']
     for key,value in list.items():
         state_list['{}'.format(key)] = value
+        
 else: 
+    
     # write to config.yaml
     value = """\
     # add osu!state or change obs scene number here
@@ -318,10 +328,10 @@ else:
     #       number
     # reference for osu!state (https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/OsuMemoryDataProvider/OsuMemoryStatus.cs)
     """
-    
     value = readYAML(value)
     config_yaml['general']['state']['list'] = value
     writeYAML(config_yaml, CONFIG_FILE)
+    
     # load from config.yaml
     list = config_yaml['general']['state']['list']
     for key,value in list.items():
@@ -329,7 +339,7 @@ else:
         
 # close config.yaml
 del key, value, list
-config_file.close()
+config_file.close()                 # I'm bad at creating user input and feedback, I'm sorry
 
 #---------------------------------------
 # Class
