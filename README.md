@@ -15,5 +15,6 @@ only windows is supported since Gosumemory only support windows
 
 ### TODO
 - [ ] Improving  
+- [ ] Separate Function and Class, and make an executable instead python script
 - [ ] Probably convert this to C# or Javascript  
 - [ ] Trying to create obs-python version  
