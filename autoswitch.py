@@ -220,6 +220,7 @@ else:
         print(Fore.RED + 'Unable to perform the initial process',
               Fore.WHITE + '\nPlease Enable OBS Websocket\n',
               Fore.WHITE + 'And make sure the password is match\n')
+        time.sleep(3)
         exit()
         
     config_yaml['obs-websocket']['scene'] = {}
@@ -376,6 +377,7 @@ class Websocket:
                 printHeader('error')
                 print(Fore.RED + 'Error :',e,Fore.WHITE + '\nPlease Enable OBS Websocket\n',
                       Fore.WHITE + 'And make sure the password is match\n')
+                time.sleep(3)
                 exit()
                 
         def disconnect(self):
