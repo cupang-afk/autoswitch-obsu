@@ -1,3 +1,5 @@
+# Example generated config.yaml
+
 general:
   song select mode:
     inactive: 20         # in seconds
