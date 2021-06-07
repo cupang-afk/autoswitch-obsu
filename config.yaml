@@ -5,17 +5,23 @@ general:
     default: '0'
     song select: '1'
     list:
-    # add osu!state or change obs scene number here
-      5: 0     # Song Select
-      7: 0     # Result
-      11: 0    # Multi Lobby
-      12: 0    # Multi Room
-      2: 3     # Playing
-    # ^     ^
+    # add [Osu!State] or change [OBS Scene Number] here
+    #
+    # First value is [Osu!State]
+    # Second value is [OBS Scene Number]
+    #
+      5: 0          # Song Select
+      7: 0          # Result
+      11: 0         # Multi Lobby
+      12: 0         # Multi Room
+      2: 3          # Playing
+    # ↑     ↑
     # osu!  obs 
     # state scene 
     #       number
-    # reference for osu!state (https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/OsuMemoryDataProvider/OsuMemoryStatus.cs)
+    #
+    # add [Osu!State] acording to this link
+    # reference for [Osu!State] (https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/OsuMemoryDataProvider/OsuMemoryStatus.cs)
 gosumemory:
   uri: ws://127.0.0.1:24050/ws
 obs-websocket:

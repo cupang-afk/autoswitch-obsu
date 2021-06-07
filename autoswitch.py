@@ -8,333 +8,62 @@ NOTE
 - The script will then generate a config.yaml which will be used to save the configuration
 """
 #---------------------------------------
-# Import Function (if not installed, install it)
-#---------------------------------------
-def checkImport(package):
-    try:
-        if(util.find_spec("{}".format(package)) == None):
-            raise ModuleNotFoundError
-        else:
-            pass
-    except ModuleNotFoundError:
-        install(package)
-    finally:
-        return True
-def install(package):
-    get_package = {
-        "websocket" :   "websocket-client",
-        "obswebsocket" :    "obs-websocket-py"
-    }.get(package, package)
-    subprocess.run(['pip', 'install','--user','-q', get_package])
-def animate():
-    for c in itertools.cycle(['|', '/', '-', '\\']):
-        if done:
-            break
-        sys.stdout.write('\rloading ' + c)
-        sys.stdout.flush()
-        time.sleep(0.1)
-
-#---------------------------------------
 # Import Libraries
 #---------------------------------------
-import os,sys
-import time
-import json
-from datetime import datetime, timedelta
-from importlib import util
 from glob import glob
-import itertools
-import threading
-import subprocess
+from datetime import datetime, timedelta
+import os
+import time
 
 #---------------------------------------
 # Import Not Installed Libraries
 #---------------------------------------
+import utils.install_package
+
 os.system('cls')
 print('----------------------------')
 print('INSTALL NOT INSTALLED MODULE')
 print('----------------------------\n')
 done = False
-t = threading.Thread(target=animate)
-t.start()
-if checkImport('websocket'):
-    import websocket
-if checkImport('obswebsocket'):
-    from obswebsocket import obsws, requests, exceptions
-if checkImport('colorama'):
-    from colorama import Fore
-if checkImport('ruamel.yaml'):
-    import ruamel.yaml
+
+utils.install_package.install_all()
+
+import websocket
+from obswebsocket import obsws, requests, exceptions
+from colorama import Fore
+
 done = True
-print('\rimported websocket')
-print('imported obswebsocket')
-print('imported colorama')
-print('imported ruamel.yaml')
 print('\n----------------------------')
 print('---ALL MODULES INSTALLED----')
 print('----------------------------\n')
 time.sleep(3)
 
 #---------------------------------------
-# Functions
+# Import Utils
 #---------------------------------------
-def printHeader(header):
-    header_template = {
-        "import config.yaml": "----------------------------\n-----IMPORT CONFIG.YAML-----\n----------------------------\n",
-        "error": "----------------------------\n-----------ERROR------------\n----------------------------\n",
-        "scene selector": "----------------------------\n-------Scene Selector-------\n----------------------------\n",
-        "initial process": "----------------------------\n-----Initial Process--------\n--------only once-----------\n----------------------------\n",
-        "password": "----------------------------\n----Please Enter Password---\n----------------------------\n",
-        "print log": "----------------------------\n---------PRINT LOG----------\n----------------------------\n"
-    }
-    print(Fore.WHITE)
-    os.system('cls')
-    print(header_template.get('{0}'.format(header)))
-    
-def readJSON(data):
-    return json.loads(data)
+from utils import print_header
+import utils.config_parser
 
-def readYAML(data, typ=None):
-    if (typ == None):
-        yaml = ruamel.yaml.YAML()
-    else:
-        yaml = ruamel.yaml.YAML(typ=typ)
-    return yaml.load(data)
-
-def writeYAML(data, file_path, typ=None):
-    if (typ == None):
-        yaml = ruamel.yaml.YAML()
-    else:
-        yaml = ruamel.yaml.YAML(typ=typ)
-    yaml.default_flow_style=False
-    with open(file_path, "w") as f:
-        yaml.dump(data, f)
-        f.close()
-  
-def CaseSensitivePath(name):
-    sep = os.path.sep
-    parts = os.path.normpath(name).split(sep)
-    dirs = parts[0:-1]
-    filename = parts[-1]
-    if dirs[0] == os.path.splitdrive(name)[0]:
-        test_name = [dirs[0].upper()]
-    else:
-        test_name = [sep + dirs[0]]
-    for d in dirs[1:]:
-        test_name += ["%s[%s]" % (d[:-1], d[-1])]
-    path = glob(sep.join(test_name))[0]
-    res = glob(sep.join((path, filename)))
-    if not res:
-        #File not found
-        return None
-    return res[0]
-    
 #---------------------------------------
 # Global Vars
 #---------------------------------------
 
-printHeader('import config.yaml')
-
-# Check if config.yaml is exist, otherwise create config.yaml
-CONFIG_FILE = ".\\config.yaml"
-
-# Read config.yaml
-try:
-    
-    print(Fore.WHITE + 'Import config.yaml')
-    config_file = open(CONFIG_FILE, "r")
-    
-except IOError:
-    
-    data = """\
-    general:
-        song select mode:
-            inactive: 20 # in seconds
-    gosumemory:
-        uri: ws://127.0.0.1:24050/ws
-    obs-websocket:
-        host: 127.0.0.1
-        port: 4444
-    """
-    
-    data = readYAML(data)
-    print(Fore.RED + 'config.yaml not found')
-    time.sleep(1)
-    print(Fore.WHITE +'Creating config.yaml')
-    writeYAML(data, CONFIG_FILE)
-    
-finally:
-    
-    CONFIG_FILE = CaseSensitivePath(str(os.path.abspath(".\\config.yaml")))
-    config_file = open(CONFIG_FILE, "r")
-    config_yaml = readYAML(config_file.read())
-
-    print(Fore.YELLOW + '"{}"'.format(CONFIG_FILE))
-    time.sleep(3)
+print_header.printHeader('import config.yaml')
+Config = utils.config_parser.Config()
     
 # Link variable with config.yaml
-song_select_inactive_period = config_yaml['general']['song select mode']['inactive']
-uri = config_yaml['gosumemory']['uri']
-host = config_yaml['obs-websocket']['host']
-port = config_yaml['obs-websocket']['port']
-
-# Check if the password is in config.yaml, otherwise enter the password
-if ('password' in config_yaml['obs-websocket']):
-    
-    password = config_yaml['obs-websocket']['password']
-    
-else:
-    
-    printHeader('password')
-    password = input(Fore.WHITE + 'Enter OBS Websocket password : ')
-    
-    config_yaml['obs-websocket']['password'] = password
-    writeYAML(config_yaml, CONFIG_FILE)
-    
-    print(Fore.WHITE + 'Password is set as : ', 
-          Fore.GREEN +'{}'.format(password),
-          Fore.WHITE +'\nYou can change password in',
-          Fore.YELLOW + '\n"{}"'.format(CONFIG_FILE),'\n')                # i can't allow no password, keep your obs safe bro
-    
-    time.sleep(5)
-
-# Get scene list from config.yaml, otherwise Get from obs-websocket
-scene_list = {}
-if ('scene' in config_yaml['obs-websocket']):
-    
-    list = config_yaml['obs-websocket']['scene']
-    for key,value in list.items():
-        scene_list['{}'.format(key)] = value
-        
-else:
-    
-    ws = obsws(host, port, password)
-    increment = 0
-    
-    # initial obs-websocket connection (not using Websocket Class and variable will be deleted)
-    printHeader('initial process')
-    try:
-        ws.connect()
-    except exceptions.ConnectionFailure:
-        
-        print(Fore.RED + 'Unable to perform the initial process',
-              Fore.WHITE + '\nPlease Enable OBS Websocket\n',
-              Fore.WHITE + 'And make sure the password is match\n')
-        time.sleep(3)
-        exit()
-        
-    config_yaml['obs-websocket']['scene'] = {}
-    writeYAML(config_yaml, CONFIG_FILE)
-    
-    get_scene_list = ws.call(requests.GetSceneList())
-    list = config_yaml['obs-websocket']['scene']
-    for scene in get_scene_list.getScenes():
-        get_name = '{}'.format(scene.get('name'))
-        if get_name.__contains__('[osu]'):
-            list[increment] = get_name
-            writeYAML(config_yaml, CONFIG_FILE)
-            increment += 1
-            
-    for key,value in list.items():
-        scene_list['{}'.format(key)] = value
-    
-    config_file.close()
-    ws.disconnect()
-    del increment, ws, get_scene_list, get_name
-    print('Done')
-
-# Get default scene mode from config.yaml, otherwise ask user
-if ('state' in config_yaml['general']):
-    
-    scene_mode_default = int(config_yaml['general']['state']['default'])
-    scene_mode_song_select = int(config_yaml['general']['state']['song select'])
-    
-else:
-    
-    config_yaml['general']['state'] = {}
-    
-    printHeader('scene selector')
-    for key, value in scene_list.items():
-        print(key,':', value)
-        
-    # user input
-    try:
-        print()
-        print(Fore.WHITE +'If it is empty then you have to rename your obs scene with', 
-            Fore.YELLOW + '[osu]', 
-            Fore.WHITE + 'included\nand run this script again (CTRL-C to terminate)\n')
-        scene_mode_default = input(Fore.WHITE + 'Enter number for your default scene : ')
-        scene_mode_song_select = input(Fore.WHITE + 'Enter number for your song select scene : ')
-    except KeyboardInterrupt:
-        exit()
-
-    config_yaml['general']['state']['default'] = scene_mode_default
-    config_yaml['general']['state']['song select'] = scene_mode_song_select
-    writeYAML(config_yaml, CONFIG_FILE)
-    
-    time.sleep(1)
-    print()
-    print(Fore.WHITE + 'I cant ask you to input every scene, but instead')
-    time.sleep(1)
-    print(Fore.WHITE + 'input them yourself in your', 
-          Fore.GREEN + 'config.yaml')
-    time.sleep(1)
-    print('\n',
-          Fore.WHITE + '-=Short Explanation=-',
-          '\n',)
-    time.sleep(1)
-    print(Fore.WHITE + 'general:\n  state:\n    list:\n',
-          Fore.BLUE + '     # add osu! state here')
-    time.sleep(1)
-    print(Fore.YELLOW + '      2 :', 
-          Fore.GREEN + '3',
-          '\n')
-    time.sleep(1)
-    print(Fore.WHITE + 'with', 
-          Fore.YELLOW + '2', 
-          Fore.WHITE + 'is osu state(from link above) and', 
-          Fore.GREEN + '3',
-          Fore.WHITE + 'is your scene number',
-          '\n')
-    time.sleep(10)
-    print(Fore.GREEN + 'Using default value')
-    time.sleep(3)
-    
-# Get state_list from config.yaml, otherwise create
-state_list = {} 
-if ('list' in config_yaml['general']['state']):
-    
-    list = config_yaml['general']['state']['list']
-    for key,value in list.items():
-        state_list['{}'.format(key)] = value
-        
-else: 
-    
-    value = """\
-    # add osu!state or change obs scene number here
-    5:  0      # Song Select
-    7:  0      # Result
-    11: 0      # Multi Lobby
-    12: 0      # Multi Room
-    2:  3      # Playing
-    # ^     ^
-    # osu!  obs 
-    # state scene 
-    #       number
-    # reference for osu!state (https://github.com/Piotrekol/ProcessMemoryDataFinder/blob/master/OsuMemoryDataProvider/OsuMemoryStatus.cs)
-    """
-    value = readYAML(value)
-    
-    config_yaml['general']['state']['list'] = value
-    writeYAML(config_yaml, CONFIG_FILE)
-    
-    list = config_yaml['general']['state']['list']
-    for key,value in list.items():
-        state_list['{}'.format(key)] = value
+song_select_inactive_period = Config.Read()['general']['song select mode']['inactive']
+uri = Config.Read()['gosumemory']['uri']
+host = Config.Read()['obs-websocket']['host']
+port = Config.Read()['obs-websocket']['port']
+password = Config.Password()
+scene_list = Config.SceneList()
+scene_mode_default = Config.DefaultState()[0]
+scene_mode_song_select = Config.DefaultState()[1]
+state_list = Config.StateList()
         
 # close config.yaml
-del key, value, list
-config_file.close()                 # I'm bad at creating user input and feedback, I'm sorry
+Config.Close()                 # I'm bad at creating user input and feedback, I'm sorry
 
 #---------------------------------------
 # Class
@@ -352,7 +81,7 @@ class Websocket:
             try:
                 self.ws.connect(self.uri)
             except ConnectionRefusedError as e:
-                printHeader('error')
+                print_header.printHeader('error')
                 print(Fore.RED + 'Error :',e,Fore.WHITE + '\nPlease Run Gosumemory and osu!')
                 time.sleep(3)
                 exit()
@@ -374,7 +103,7 @@ class Websocket:
             try:
                 self.ws.connect()
             except exceptions.ConnectionFailure as e:
-                printHeader('error')
+                print_header.printHeader('error')
                 print(Fore.RED + 'Error :',e,Fore.WHITE + '\nPlease Enable OBS Websocket\n',
                       Fore.WHITE + 'And make sure the password is match\n')
                 time.sleep(3)
@@ -422,7 +151,7 @@ class OsuMainVar:
         self.__map_id = None
         
     def Update(self, data):
-        osu_json = readJSON(data)
+        osu_json = utils.config_parser.readJSON(data)
         # doing self update
         self.__memorystate = osu_json['menu']['state']
         self.__bg_path = osu_json['menu']['bm']['path']['full']
@@ -575,7 +304,7 @@ if __name__ == "__main__":
     ts = translateScene()
     ws_osu.connect()
     ws_obs.connect()
-    printHeader('print log')
+    print_header.printHeader('print log')
     while True:
         try:
             omv.Update(ws_osu.recv())
