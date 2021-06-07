@@ -3,7 +3,7 @@ autoswitch scene obs based from osu!state (Main Menu, Editor, Playing, Lobby etc
 ### What you need
 * [Gosumemory](https://github.com/l3lackShark/gosumemory)
 * [Obs-Websocket](https://github.com/Palakis/obs-websocket/releases/)
-* [Python](https://www.python.org/downloads/)
+* [Python 3](https://www.python.org/downloads/)
 
 ### Usage
 1. first run osu!, gosumemory and obs
