@@ -49,7 +49,7 @@ def CaseSensitivePath(name):
 
 class Config:
     def __init__(self):
-        self.CONFIG_FILE = os.path.join(os.sys.path[0], "config.yaml")
+        self.CONFIG_FILE = ".\\config.yaml"
     
         # Check if config.yaml is exist, otherwise create config.yaml
         
