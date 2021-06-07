@@ -8,7 +8,8 @@ autoswitch scene obs based from osu!state (Main Menu, Editor, Playing, Lobby etc
 1. first run osu!, gosumemory and obs
 2. setup password in obs-websocket settings
 3. download latest [release](https://github.com/cupang-afk/autoswitch-obsu/releases/latest/download/autoswitch_0.4-alpha.zip) 
-4. open `autoswitch.exe`
+4. extract file
+5. open `autoswitch.exe`
 
 #### or
 if you prefer run python script instead, then install 
