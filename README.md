@@ -15,9 +15,10 @@ autoswitch scene obs based from osu!state (Main Menu, Editor, Playing, Lobby etc
 #### or
 if you prefer run python script instead, then install 
 * [Python 3](https://www.python.org/downloads/)
-1. clone/download this source code
-2. open `run.bat`
-3. or `python autoswitch.py` in cmd
+1. install Python 3 and Add to PATH
+2. clone/download this source code
+3. open `run.bat`
+4. or `python autoswitch.py` in cmd
 
 ### NOTE
 only windows is supported since Gosumemory only support windows  
