@@ -122,7 +122,7 @@ class Config:
         
         scene_list = {}
         
-        if ('scene' in self.Read()['obs-websocket']):
+        if ('scene' in self.Read()['obs-websocket']):               #TODO add if scene_list is not blank
             list = self.Read()['obs-websocket']['scene']
             
             for key,value in list.items():
