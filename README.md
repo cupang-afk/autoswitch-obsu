@@ -17,6 +17,7 @@ if you prefer run python script instead, then install
 * [Python 3](https://www.python.org/downloads/)
 1. clone/download this source code
 2. open `run.bat`
+3. or `python autoswitch.py` in cmd
 
 ### NOTE
 only windows is supported since Gosumemory only support windows  
